@@ -1,4 +1,5 @@
 import collections
+import math
 
 
 class Grid:
@@ -15,20 +16,70 @@ class Grid:
                         for _ in range(self.rows)]
         
 
-    def add_obj_to_cell(self, obj):
-        col, row = self.get_cell_index(obj.x, obj.y)
+    def add_obj_to_cell(self, obj, cell):
+        row, col = cell
         self.cells[row][col].append(obj)
+        return row, col
 
-
-    def remove_obj_from_cell(self, obj):
-        col, row = self.get_cell_index(obj.x, obj.y)
+    def remove_obj_from_cell(self, obj, cell):
+        row, col = cell
         self.cells[row][col].remove(obj)
-        
+        return row, col
+    
 
     def get_cell_index(self, x, y):
-        col = int(x / self.cell_size)
         row = int(y / self.cell_size)
-        col = max(0, min(col, self.cols - 1))
         row = max(0, min(row, self.rows - 1))
-        return col, row
+        col = int(x / self.cell_size)
+        col = max(0, min(col, self.cols - 1))
+        return row, col
+        
 
+    def get_cell_indices(self, x, y, radius):
+        '''
+        Gets the cell index where (x, y) is located on the grid
+        '''
+        output = set()
+
+        # Center of circle
+        row, col = self.get_cell_index(x, y)
+        output.add((row, col))
+
+        # Top of circle
+        row, col = self.get_cell_index(x, (y - radius))
+        output.add((row, col))
+
+        # Bottom of circle
+        row, col = self.get_cell_index(x, (y + radius))
+        output.add((row, col))
+
+        # Right of circle
+        row, col = self.get_cell_index((x + radius), y)
+        output.add((row, col))
+
+        # Left of circle
+        row, col = self.get_cell_index((x - radius), y)
+        output.add((row, col))
+
+        # Diagonals of circle (45 degrees)
+        top_right_x = x + radius * math.cos(math.pi / 4)
+        top_right_y = y + radius * math.sin(math.pi / 4)
+        row, col = self.get_cell_index(top_right_x, top_right_y)
+        output.add((row, col))
+
+        top_left_x = x + radius * math.cos((3 * math.pi) / 4)
+        top_left_y = y + radius * math.sin((3 * math.pi) / 4)
+        row, col = self.get_cell_index(top_left_x, top_left_y)
+        output.add((row, col))
+
+        bottom_left_x = x + radius * math.cos((5 * math.pi) / 4)
+        bottom_left_y = y + radius * math.sin((5 * math.pi) / 4)
+        row, col = self.get_cell_index(bottom_left_x, bottom_left_y)
+        output.add((row, col))
+
+        bottom_right_x = x + radius * math.cos((7 * math.pi) / 4)
+        bottom_right_y = y + radius * math.sin((7 * math.pi) / 4)
+        row, col = self.get_cell_index(bottom_right_x, bottom_right_y)
+        output.add((row, col))
+
+        return output

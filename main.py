@@ -42,11 +42,11 @@ def main():
 
         # FRUIT DRAW LOGIC
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        print(grid.get_cell_index(mouse_x, mouse_y-LINE_Y))
+        # print(grid.get_cell_indices(mouse_x, mouse_y-LINE_Y, 25))
 
         for fruit in fruits:
             if fruit.is_dropped:
-                fruit.update(fruits, grid)
+                fruit.update(grid)
             else:
                 # Ensure fruit doesn't go past screen boundaries
                 if (mouse_x - fruit.radius) < 0: # LEFT BOUND
@@ -58,7 +58,7 @@ def main():
 
             fruit.draw(window_screen)
             
-        # print(len(fruits))
+        print(len(fruits))
 
         # KEY EVENTS
         for event in pygame.event.get():
@@ -68,10 +68,11 @@ def main():
                 if event.key == pygame.K_ESCAPE: # ONLY WAY TO EXIT IS ESC
                     running = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                # Pick another fruit
-                current_fruit.is_dropped = True
-                current_fruit = Fruit(0, 0, random.choice(possible_radii))
-                fruits.append(current_fruit)
+                if event.button == 1: # Left click only
+                    # Pick another fruit
+                    current_fruit.is_dropped = True
+                    current_fruit = Fruit(0, 0, random.choice(possible_radii))
+                    fruits.append(current_fruit)
 
         pygame.display.flip()
 
